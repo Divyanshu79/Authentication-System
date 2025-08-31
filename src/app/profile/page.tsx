@@ -1,5 +1,8 @@
 'use client'; // Only for App Router
 import Image from 'next/image'; // Adjust the path as necessary
+import axios from 'axios';
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 import {
     FaGithub,
@@ -10,6 +13,22 @@ import {
 } from 'react-icons/fa';
 
 export default function ProfilePage() {
+    const router = useRouter();
+
+    const onLogout = async () => {
+        try {
+            const response = await axios.get('/api/users/logout')
+            toast.success("Logout Successfully");
+            console.log(response);
+            router.push("/login");
+
+        } catch (error: any) {
+            console.log(error);
+            toast.error(error)
+        }
+    }
+
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-indigo-100 to-purple-200 flex items-center justify-center p-6">
             <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl p-8 md:p-12 flex flex-col md:flex-row gap-8">
@@ -77,6 +96,10 @@ export default function ProfilePage() {
                         >
                             GitHub
                         </a>
+                        <button onClick={onLogout}
+                            className="bg-gray-800 hover:bg-black text-white px-6 py-2 rounded-full shadow transition"  >
+                            LogOut
+                        </button>
                     </div>
 
                     {/* Social Icons */}
@@ -93,6 +116,8 @@ export default function ProfilePage() {
                     </div>
                 </div>
             </div>
+            <hr />
+
         </div>
     );
 }
