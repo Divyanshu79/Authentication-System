@@ -7,10 +7,8 @@ import toast from "react-hot-toast";
 
 
 
-
-
 export default function SignupPage(e: React.MouseEvent<HTMLButtonElement>) {
-    e.preventDefault;
+    e.preventDefault();
     const router = useRouter();
     const [user, setUser] = React.useState({
         email: "",
@@ -26,13 +24,10 @@ export default function SignupPage(e: React.MouseEvent<HTMLButtonElement>) {
         try {
 
             setLoading(true);
-            const response = axios.post("/api/users/signup", user);
-            console.log("Signup Success", (await response).data);
-            router.push("/login");
+            const response = await axios.post("/api/users/signup", user);  // user post here
+            console.log("Signup Success", response.data);
+            router.push("/login");  // redirect to login
             toast.success("Signup Success");
-
-
-
 
         } catch (error: any) {
             console.log(error, "signup Failed:");
@@ -43,7 +38,7 @@ export default function SignupPage(e: React.MouseEvent<HTMLButtonElement>) {
         }
     }
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (user.email.length > 0 && user.password.length > 0 && user.username.length > 0) {
             setButtonDisabled(false);
 
@@ -54,7 +49,7 @@ export default function SignupPage(e: React.MouseEvent<HTMLButtonElement>) {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <form action="" className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md space-y-4">
+            <form className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md space-y-4">
 
                 <h2 className="text-2xl font-semibold text-center text-gray-800">{loading ? "processing" : " SignUp"}</h2>
 
