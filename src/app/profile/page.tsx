@@ -1,8 +1,9 @@
-'use client'; // Only for App Router
-import Image from 'next/image'; // Adjust the path as necessary
+'use client';
 import axios from 'axios';
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 import {
     FaGithub,
@@ -12,29 +13,49 @@ import {
     FaPhoneAlt,
 } from 'react-icons/fa';
 
+// ✅ Define type for your user data
+
+
 export default function ProfilePage() {
     const router = useRouter();
+    const [data, setData] = useState("nothing"); // typed state
+
+    const getUserData = async () => {
+        try {
+            const res = await axios.get('/api/users/me');
+            console.log(res.data);
+            setData(res.data.data._id);
+        } catch (error) {
+            console.error(error, "Something Went Wrong in Profile");
+            toast.error("Failed to fetch user data");
+        }
+    };
 
     const onLogout = async () => {
         try {
-            const response = await axios.get('/api/users/logout')
+            await axios.get('/api/users/logout');
             toast.success("Logout Successfully");
-            console.log(response);
             router.push("/login");
-
-        } catch (error: any) {
-            console.log(error);
-            toast.error(error)
+        } catch (error) {
+            console.error(error);
+            toast.error("Logout failed");
         }
-    }
+    };
+
 
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-indigo-100 to-purple-200 flex items-center justify-center p-6">
             <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl p-8 md:p-12 flex flex-col md:flex-row gap-8">
 
+                {/* User Data Display */}
+
+
                 {/* Profile Image */}
                 <div className="flex-shrink-0 flex flex-col items-center md:items-start">
+                    <h3 className="p-4 rounded bg-amber-600 text-black flex-col">
+                        {data === "nothing" ? "NOTHING HERE " : <Link href={`/profile/${data}`}>{data}</Link>}
+                    </h3>
                     <img
                         src="/image.png"
                         alt="Profile"
@@ -96,9 +117,17 @@ export default function ProfilePage() {
                         >
                             GitHub
                         </a>
-                        <button onClick={onLogout}
-                            className="bg-gray-800 hover:bg-black text-white px-6 py-2 rounded-full shadow transition"  >
+                        <button
+                            onClick={onLogout}
+                            className="bg-gray-800 hover:bg-black text-white px-6 py-2 rounded-full shadow transition"
+                        >
                             LogOut
+                        </button>
+                        <button
+                            onClick={getUserData}
+                            className="bg-green-900 hover:bg-black text-white px-6 py-2 rounded-full shadow transition"
+                        >
+                            GetData
                         </button>
                     </div>
 
@@ -117,7 +146,6 @@ export default function ProfilePage() {
                 </div>
             </div>
             <hr />
-
         </div>
     );
 }
